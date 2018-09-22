@@ -15,16 +15,6 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for( 'help' ) }}">Help</a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Language
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            {% for lang in languages %}
-                                <a class="dropdown-item" href="{{ url_for('help', lang=lang) }}">{{ lang }}</a>
-                            {% endfor %}
-                        </div>
-                    </li>
 
                     <li class="nav-item">
                         <a class="nav-link" href="https://discord.gg/WQVaYmT" target="_blank">Discord</a>
@@ -35,7 +25,7 @@
                 </ul>
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item push-right">
-                        <a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
+                        <a class="nav-link" href="#">Dashboard</a>
                     </li>
                 </ul>
             </div>
@@ -55,22 +45,29 @@
                     <h1 class="display-3 text-dark text-center" style="margin-top: 6rem;">SoundFX Help</h1>
 
                     <div class="d-flex justify-content-center">
-                        <img src="{{ logo }}" class="rounded-circle" style="width: 18vw; height: 18vw; margin: 2rem;"></img>
+                        <img src="https://raw.githubusercontent.com/JellyWX/soundfx-bot/master/sound_fx_bot_logo.png" class="rounded-circle" style="width: 18vw; height: 18vw; margin: 2rem;"></img>
                     </div>
 
-                    {% for category, items in help %}
-                        <hr>
-                        <h2 class="font-weight-light text-secondary" style="margin-top: 2rem;">{{ category }}</h2>
+                    <hr>
+                    <h2 class="font-weight-light text-secondary" style="margin-top: 2rem;">Basic Commands</h2>
 
-                        {% for item, description in items.items() %}
-                            <h4><code>{{ item }}</code></h4>
+                        <h4><code>?play</code></h4>
 
                             <div class="lead" style="margin-left: 10%; margin-bottom: 2rem;">
-                                {{ description | safe }}
+                                Play a provided sound by name. Will search the server sounds, then public sounds.
                             </div>
 
-                        {% endfor %}
-                    {% endfor %}
+                        <h4><code>?play ID:1234</code></h4>
+
+                            <div class="lead" style="margin-left: 10%; margin-bottom: 2rem;">
+                                Play a sound by ID.
+                            </div>
+
+                        <h4><code>?stop</code></h4>
+
+                            <div class="lead" style="margin-left: 10%; margin-bottom: 2rem;">
+                                Disconnect the bot from the voice channel.
+                            </div>
 
                 </div>
 
