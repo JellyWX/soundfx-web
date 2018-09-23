@@ -7,4 +7,4 @@ def index():
 
 @app.route('/help/')
 def help():
-    return render_template('index.html')
+    return render_template('index.html', title='Help')
