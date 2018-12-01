@@ -48,4 +48,4 @@ def dashboard():
     a = Sound.query.all()
     print(a)
 
-    return render_template('dashboard.html', sounds=a)
+    return render_template('dashboard.html', sounds=a, title='Dashboard')
