@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="row">
+
+        <div class="col-md-1 col-lg-3 d-none d-md-block">
+
+        </div>
+
+        <div class="col-sm-12 col-md-10 col-lg-6">
+
+            <h1 class="display-3 text-dark text-center" style="margin-top: 6rem;">SoundFX Help</h1>
+
+            <div class="d-flex justify-content-center">
+                <img src="https://raw.githubusercontent.com/JellyWX/soundfx-bot/master/sound_fx_bot_logo.png" class="rounded-circle" style="width: 18vw; height: 18vw; margin: 2rem;"></img>
+            </div>
+
+            <h3>Get unlimited sounds and 1MB uploads! Visit <a href="https://fusiondiscordbots.com/premium">here!</a></h3>
+
+            <hr>
+            <h2 class="font-weight-light text-secondary" style="margin-top: 2rem;">Basic Commands</h2>
+
+                <h4><code>?upload &lt;name&gt;</code></h4>
+
+                    <div class="lead" style="margin-left: 10%; margin-bottom: 2rem;">
+                        Upload a new sound to the specified <code>name</code>.
+                    </div>
+
+                <h4><code>?play &lt;name&gt;</code></h4>
+
+                    <div class="lead" style="margin-left: 10%; margin-bottom: 2rem;">
+                        Play a provided sound by name. Will search the server sounds, then public sounds.
+                    </div>
+
+                <h4><code>?play ID:&lt;ID&gt;</code></h4>
+
+                    <div class="lead" style="margin-left: 10%; margin-bottom: 2rem;">
+                        Play a public sound using it's ID.
+                    </div>
+
+                <h4><code>?stop</code></h4>
+
+                    <div class="lead" style="margin-left: 10%; margin-bottom: 2rem;">
+                        Disconnect the bot from the voice channel.
+                    </div>
+
+                <h4><code>?list</code></h4>
+
+                    <div class="lead" style="margin-left: 10%; margin-bottom: 2rem;">
+                        List sounds on your guild.
+                    </div>
+
+                <h4><code>?list me</code></h4>
+
+                    <div class="lead" style="margin-left: 10%; margin-bottom: 2rem;">
+                        List sounds you've uploaded.
+                    </div>
+
+                <h4><code>?delete &lt;name&gt;</code></h4>
+
+                    <div class="lead" style="margin-left: 10%; margin-bottom: 2rem;">
+                        Delete sounds from your guild.
+                    </div>
+
+            <hr>
+            <h2 class="font-weight-light text-secondary" style="margin-top: 2rem;">Public Commands</h2>
+
+                <h4><code>?public &lt;name&gt;</code></h4>
+
+                    <div class="lead" style="margin-left: 10%; margin-bottom: 2rem;">
+                        Change a sound to be public or private.
+                    </div>
+
+                <h4><code>?search &lt;name&gt;</code></h4>
+
+                    <div class="lead" style="margin-left: 10%; margin-bottom: 2rem;">
+                        Search public sounds by name to get IDs.
+                    </div>
+
+                <h4><code>?new</code></h4>
+
+                    <div class="lead" style="margin-left: 10%; margin-bottom: 2rem;">
+                        Find newly added public sounds.
+                    </div>
+
+                <h4><code>?popular</code></h4>
+
+                    <div class="lead" style="margin-left: 10%; margin-bottom: 2rem;">
+                        Find popular public sounds.
+                    </div>
+
+                <h4><code>?random</code></h4>
+
+                    <div class="lead" style="margin-left: 10%; margin-bottom: 2rem;">
+                        Find some random public sounds.
+                    </div>
+
+                <h4><code>?greet &lt;ID&gt;</code></h4>
+
+                    <div class="lead" style="margin-left: 10%; margin-bottom: 2rem;">
+                        Set your greet sound (plays when you join a chat).
+                    </div>
+
+            <hr>
+            <h2 class="font-weight-light text-secondary" style="margin-top: 2rem;">Setting Commands</h2>
+
+                <h4><code>?prefix &lt;prefix&gt;</code></h4>
+
+                    <div class="lead" style="margin-left: 10%; margin-bottom: 2rem;">
+                        Change the bot's prefix.
+                    </div>
+
+                <h4><code>?roles</code></h4>
+
+                    <div class="lead" style="margin-left: 10%; margin-bottom: 2rem;">
+                        Add/remove roles to the blacklist (ban roles from playing sounds).
+                    </div>
+
+                <h4><code>?info</code></h4>
+
+                    <div class="lead" style="margin-left: 10%; margin-bottom: 2rem;">
+                        Get info on the bot.
+                    </div>
+
+                <h4><code>?more</code></h4>
+
+                    <div class="lead" style="margin-left: 10%; margin-bottom: 2rem;">
+                        View how many sounds you have and how to get more.
+                    </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
