@@ -1,5 +1,6 @@
 from flask import redirect, render_template, request, url_for, session, abort, flash
 from app import app, discord, db
+from app.models import Sound
 import os
 import requests
 import json
@@ -30,13 +31,21 @@ def oauth():
 @app.route('/play/', methods=['POST'])
 def play():
     id = request.args.get('id')
-    guild = session.get('guild')
     user = session.get('user')
-    requests.get('http://localhost:7765/play?id={}&guild={}&user={}'.format(id, guild, user))
+    requests.get('http://localhost:7765/play?id={}&user={}'.format(id, user))
+    return ('OK', 200)
+
 
 @app.route('/dashboard/')
 def dashboard():
     if not discord.authorized:
         return redirect(url_for('oauth'))
 
-    return render_template('dashboard.html')
+    user = discord.get('api/users/@me').json()
+
+    session['user'] = user['id']
+
+    a = Sound.query.all()
+    print(a)
+
+    return render_template('dashboard.html', sounds=a)
