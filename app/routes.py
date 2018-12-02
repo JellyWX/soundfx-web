@@ -1,6 +1,6 @@
 from flask import redirect, render_template, request, url_for, session, abort, flash
 from app import app, discord, db
-from app.models import Sound
+from app.models import Sound, User
 import os
 import requests
 import json
@@ -45,7 +45,7 @@ def dashboard():
 
     session['user'] = user['id']
 
-    a = Sound.query.all()
-    print(a)
+    u = User.query.filter(User.id == user['id']).first()
+    s = Sound.query.filter(Sound.public == True).all()
 
-    return render_template('dashboard.html', sounds=a, title='Dashboard')
+    return render_template('dashboard.html', user_sounds=u.sounds, public=s, title='Dashboard')

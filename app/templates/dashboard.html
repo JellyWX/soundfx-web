@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="container-fluid">
+<div class="container-fluid" style="min-height: 100vh;">
 
     <div class="row">
 
@@ -13,26 +13,54 @@
 
             <h1 class="display-3 text-dark text-center" style="margin-top: 6rem;">Dashboard</h1>
 
-            {% for sound in sounds %}
-                <a href="javascript:req('{{ url_for('play', id=sound.id) }}')">{{ sound.name }}</a>
-            {% endfor %}
+            <h3 class="display-5 text-dark">Your sounds</h3>
+            <hr>
+
+            <div class="container">
+                <div class="row">
+                    {% for sound in user_sounds %}
+                        <div class="col-6">
+                            <a href="#" data-toggle="tooltip" data-placement="bottom" title="ID: {{ sound.id }}, Plays: {{ sound.plays }}">
+                                <button type="button" onclick="javascript:req('{{ url_for('play', id=sound.id) }}')" class="btn btn-outline-primary" style="width: 100%; margin-top: 0.5rem;">{{ sound.name }}</button>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <h3 class="display-5 text-dark" style="margin-top: 2rem;">Public sounds</h3>
+            <hr>
+
+            <div class="container">
+                <div class="row">
+                    {% for sound in public %}
+                        <div class="col-6">
+                            <a href="#" data-toggle="tooltip" data-placement="bottom" title="ID: {{ sound.id }}, Plays: {{ sound.plays }}">
+                                <button type="button" onclick="javascript:req('{{ url_for('play', id=sound.id) }}')" class="btn btn-outline-primary" style="width: 100%; margin-top: 0.5rem;">{{ sound.name }}</button>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
 
             <script>
 
 function req(url) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
-        console.log("done");
+        
     };
     xhttp.open("POST", url, true);
     xhttp.send();
 }
 
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+});
+
             </script>
         </div>
-
     </div>
-
 </div>
 
 {% endblock %}
