@@ -35,3 +35,5 @@ class Config(object):
         SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{user}@{host}/{db}?charset=utf8mb4'.format(user=user, host=host, db=db)
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    RESULTS_PER_PAGE = 8

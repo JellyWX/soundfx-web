@@ -19,11 +19,7 @@
             <div class="container">
                 <div class="row">
                     {% for sound in user_sounds %}
-                        <div class="col-6">
-                            <a href="#" data-toggle="tooltip" data-placement="bottom" title="ID: {{ sound.id }}, Plays: {{ sound.plays }}">
-                                <button type="button" onclick="javascript:req('{{ url_for('play', id=sound.id) }}')" class="btn btn-outline-primary" style="width: 100%; margin-top: 0.5rem;">{{ sound.name }}</button>
-                            </a>
-                        </div>
+                        {% include '_sound_item.html' %}
                     {% endfor %}
                 </div>
             </div>
@@ -31,27 +27,59 @@
             <h3 class="display-5 text-dark" style="margin-top: 2rem;">Public sounds</h3>
             <hr>
 
+            <form action="{{ url_for('dashboard') }}" method="get">
+                <div class="input-group">
+                    <input type="text" name="query" class="form-control rounded" placeholder="Search Sound Repository..."></input>
+                    <input type="submit" class="btn btn-primary" style="margin-left: 0.6rem;"></input>
+                </div>
+            </form>
+
             <div class="container">
                 <div class="row">
                     {% for sound in public %}
-                        <div class="col-6">
-                            <a href="#" data-toggle="tooltip" data-placement="bottom" title="ID: {{ sound.id }}, Plays: {{ sound.plays }}">
-                                <button type="button" onclick="javascript:req('{{ url_for('play', id=sound.id) }}')" class="btn btn-outline-primary" style="width: 100%; margin-top: 0.5rem;">{{ sound.name }}</button>
-                            </a>
-                        </div>
+                        {% include '_sound_item.html' %}
                     {% endfor %}
                 </div>
             </div>
+
+            <div class="d-flex flex-row justify-content-between">
+                {% if p - 1 >= 0 %}
+                <a href="{{ url_for('dashboard', query=q, page=p-1) }}"><i class="fas fa-arrow-circle-left" style="font-size: 3.6rem;"></i></a>
+                {% else %}
+                <p style="color: gray;"><i class="fas fa-arrow-circle-left" style="font-size: 3.6rem;"></i></p>
+                {% endif %}
+
+                {% if p + 1 <= max_pages %}
+                <a href="{{ url_for('dashboard', query=q, page=p+1) }}"><i class="fas fa-arrow-circle-right" style="font-size: 3.6rem;"></i></a>
+                {% else %}
+                <p style="color: gray;"><i class="fas fa-arrow-circle-right" style="font-size: 3.6rem;"></i></p>
+                {% endif %}
+            </div>
+
+            <br>
+            <br>
+            <br>
 
             <script>
 
 function req(url) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
-        
+
     };
     xhttp.open("POST", url, true);
     xhttp.send();
+}
+
+function play(id) {
+    audio = new Audio('{{ url_for('audio') }}' + '?id=' + id);
+    audio.play();
+}
+
+function open(id) {
+    console.log("test");
+    d = document.getElementById(`p${id}`);
+    d.innerHTML = `<source src="{{ url_for('audio') }}${id}"></source>`;
 }
 
 $(document).ready(function(){

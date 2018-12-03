@@ -1,5 +1,6 @@
 from app import db
 from sqlalchemy_json import NestedMutableJson
+from sqlalchemy.dialects.mysql import LONGBLOB
 
 
 class Server(db.Model):
@@ -22,6 +23,7 @@ class Sound(db.Model):
     name = db.Column( db.String(20) )
 
     url = db.Column( db.Text )
+    src = db.Column( LONGBLOB )
     last_used = db.Column( db.Integer )
     plays = db.Column( db.Integer )
 
