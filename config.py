@@ -10,8 +10,6 @@ class Config(object):
     client_secret = config.get('WEB', 'DISCORD_OAUTH_CLIENT_SECRET')
     secret = config.get('WEB', 'SECRET')
 
-    token = config.get('DEFAULT', 'token')
-
     user = config.get('MYSQL', 'user')
     try:
         passwd = config.get('MYSQL', 'passwd')
@@ -24,8 +22,6 @@ class Config(object):
 
     DISCORD_OAUTH_CLIENT_ID = os.environ.get('DISCORD_OAUTH_CLIENT_ID') or client_id
     DISCORD_OAUTH_CLIENT_SECRET = os.environ.get('DISCORD_OAUTH_CLIENT_SECRET') or client_secret
-
-    BOT_TOKEN = token
 
     SESSION_TYPE = 'sqlalchemy'
 
