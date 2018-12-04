@@ -36,4 +36,4 @@ class Config(object):
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    RESULTS_PER_PAGE = 8
+    RESULTS_PER_PAGE = 24
