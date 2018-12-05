@@ -58,7 +58,7 @@ def dashboard():
 
     u = User.query.filter(User.id == user['id']).first()
 
-    s = Sound.query.filter(Sound.public == True).filter(Sound.name.ilike('%{}%'.format(query)))
+    s = Sound.query.filter((Sound.public == True) & (Sound.src != None) & (Sound.name.ilike('%{}%'.format(query))))
     max_pages = s.count() // app.config['RESULTS_PER_PAGE']
 
     s = s.slice(page*app.config['RESULTS_PER_PAGE'], (page+1)*app.config['RESULTS_PER_PAGE'])
