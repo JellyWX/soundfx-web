@@ -4,7 +4,6 @@ from app.models import Sound, User
 import os
 import requests
 import json
-import zlib
 import io
 
 
@@ -71,4 +70,4 @@ def audio():
     id = request.args.get('id')
     s = Sound.query.get(id)
 
-    return send_file(io.BytesIO(zlib.decompress(s.src)), mimetype='audio/ogg', attachment_filename='{}.ogg'.format(s.name))
+    return send_file(io.BytesIO(s.src), mimetype='audio/opus', attachment_filename='{}.opus'.format(s.name))
