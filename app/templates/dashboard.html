@@ -30,7 +30,7 @@
             <form action="{{ url_for('dashboard') }}" method="get">
                 <div class="input-group">
                     <input type="text" name="query" class="form-control rounded" placeholder="Search Sound Repository..."></input>
-                    <input type="submit" class="btn btn-primary" style="margin-left: 0.6rem;"></input>
+                    <input type="submit" class="btn btn-primary" style="margin-left: 0.6rem;" value="Search"></input>
                 </div>
             </form>
 
@@ -74,12 +74,6 @@ function req(url) {
 function play(id) {
     audio = new Audio('{{ url_for('audio') }}' + '?id=' + id);
     audio.play();
-}
-
-function open(id) {
-    console.log("test");
-    d = document.getElementById(`p${id}`);
-    d.innerHTML = `<source src="{{ url_for('audio') }}${id}"></source>`;
 }
 
 $(document).ready(function(){
