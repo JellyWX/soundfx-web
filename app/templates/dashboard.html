@@ -72,8 +72,14 @@ function req(url) {
 }
 
 function play(id) {
-    audio = new Audio('{{ url_for('audio') }}' + '?id=' + id);
-    audio.play();
+    audio_src = '{{ url_for('audio') }}' + '?id=' + id;
+
+    var sound = new Howl({
+        src: [audio_src],
+        format: 'opus'
+    });
+
+    sound.play();
 }
 
 $(document).ready(function(){

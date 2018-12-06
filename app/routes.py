@@ -39,7 +39,7 @@ def oauth():
 @app.route('/play/', methods=['POST'])
 def play():
     id = request.args.get('id')
-    user = session.get('user')
+    user = session.get('user') or discord.get('api/users/@me').json().get('user')
     requests.get('http://localhost:7765/play?id={}&user={}'.format(id, user))
     return ('OK', 200)
 
