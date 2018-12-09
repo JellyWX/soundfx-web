@@ -1,5 +1,5 @@
 from flask import redirect, render_template, request, url_for, session, abort, flash, send_file
-from app import app, discord, db
+from app import app, discord, db, limiter
 from app.models import Sound, User
 import os
 import requests
@@ -37,10 +37,14 @@ def oauth():
 
 
 @app.route('/play/', methods=['POST'])
+@limiter.limit('1 per 4 seconds')
 def play():
     id = request.args.get('id')
     user = session.get('user') or discord.get('api/users/@me').json().get('user')
-    requests.get('http://localhost:7765/play?id={}&user={}'.format(id, user))
+
+    if not (id is None or user is None):
+        requests.get('http://localhost:7765/play?id={}&user={}'.format(id, user))
+
     return ('OK', 200)
 
 
