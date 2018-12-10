@@ -42,8 +42,9 @@ def oauth():
 def play():
     id = request.args.get('id')
     user = session.get('user') or discord.get('api/users/@me').json().get('user')
+    s = Sound.query.get(id)
 
-    if not (id is None or user is None):
+    if s is not None and (s.public or s.user_id == user) and (not (id is None or user is None)):
         requests.get('http://localhost:7765/play?id={}&user={}'.format(id, user))
 
     return ('OK', 200)
@@ -79,5 +80,10 @@ def dashboard():
 def audio():
     id = request.args.get('id')
     s = Sound.query.get(id)
+    user = session.get('user') or discord.get('api/users/@me').json().get('user')
 
-    return send_file(io.BytesIO(s.src), mimetype='audio/opus', attachment_filename='{}.opus'.format(s.name))
+    if s is not None and (s.public or s.user_id == user):
+        return send_file(io.BytesIO(s.src), mimetype='audio/opus', attachment_filename='{}.opus'.format(s.name))
+
+    else:
+        return ('Forbidden', 403)
