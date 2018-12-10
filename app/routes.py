@@ -1,4 +1,5 @@
 from flask import redirect, render_template, request, url_for, session, abort, flash, send_file
+from sqlalchemy.sql.expression import func
 from app import app, discord, db, limiter
 from app.models import Sound, User
 import os
@@ -58,15 +59,20 @@ def dashboard():
     session['user'] = user['id']
     query = request.args.get('query') or ''
     page = int_or_none(request.args.get('page')) or 0
+    random = int_or_none(request.args.get('random')) or 0
 
     u = User.query.filter(User.id == user['id']).first()
 
-    s = Sound.query.filter((Sound.public == True) & (Sound.src != None) & (Sound.name.ilike('%{}%'.format(query))))
+    if random:
+        s = Sound.query.filter((Sound.public == True) & (Sound.src != None) & (Sound.name.ilike('%{}%'.format(query)))).order_by( func.rand() )
+    else:
+        s = Sound.query.filter((Sound.public == True) & (Sound.src != None) & (Sound.name.ilike('%{}%'.format(query)))).order_by( Sound.name )
+
     max_pages = s.count() // app.config['RESULTS_PER_PAGE']
 
     s = s.slice(page*app.config['RESULTS_PER_PAGE'], (page+1)*app.config['RESULTS_PER_PAGE'])
 
-    return render_template('dashboard.html', user_sounds=u.sounds, public=s, q=query, p=page, max_pages=max_pages, title='Dashboard')
+    return render_template('dashboard.html', user_sounds=u.sounds, public=s, q=query, p=page, max_pages=max_pages, title='Dashboard', random=random)
 
 
 @app.route('/audio/')
