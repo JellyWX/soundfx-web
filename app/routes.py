@@ -6,6 +6,7 @@ import os
 import requests
 import json
 import io
+import subprocess
 
 
 def int_or_none(o):
@@ -44,7 +45,7 @@ def play():
     user = session.get('user') or discord.get('api/users/@me').json().get('user')
     s = Sound.query.get(id)
 
-    if s is not None and (s.public or s.user_id == user) and (not (id is None or user is None)):
+    if s is not None and (s.public or s.uploader_id == user) and (not (id is None or user is None)):
         requests.get('http://localhost:7765/play?id={}&user={}'.format(id, user))
 
     return ('OK', 200)
@@ -82,8 +83,11 @@ def audio():
     s = Sound.query.get(id)
     user = session.get('user') or discord.get('api/users/@me').json().get('user')
 
-    if s is not None and (s.public or s.user_id == user):
-        return send_file(io.BytesIO(s.src), mimetype='audio/opus', attachment_filename='{}.opus'.format(s.name))
+    if s is not None and (s.public or s.uploader_id == int(user)):
+        sub = subprocess.Popen(('ffmpeg', '-i', '-', '-loglevel', 'error', '-f', 'mp3', 'pipe:1'), stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+        stdout = sub.communicate(input=s.src)[0]
+
+        return send_file(io.BytesIO(stdout), mimetype='audio/mp3', attachment_filename='{}.mp3'.format(s.name))
 
     else:
         return ('Forbidden', 403)
