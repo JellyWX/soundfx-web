@@ -54,7 +54,23 @@ def play():
 @app.route('/fav/', methods=['POST'])
 def fav():
     id = int_or_none(request.args.get('id'))
-    
+    user = session.get('user') or discord.get('api/users/@me').json().get('user')
+
+    u = User.query.filter(User.id == user).first()
+    s = Sound.query.get(id)
+
+    if s in u.favorites:
+        u.favorites.remove(s)
+        db.session.commit()
+
+        return ('removed', 200)
+
+    else:
+        u.favorites.append(s)
+        db.session.commit()
+
+        return ('added', 200)
+
 
 
 @app.route('/dashboard/')
@@ -80,7 +96,7 @@ def dashboard():
 
     s = s.slice(page*app.config['RESULTS_PER_PAGE'], (page+1)*app.config['RESULTS_PER_PAGE'])
 
-    return render_template('dashboard.html', user_sounds=u.sounds, public=s, q=query, p=page, max_pages=max_pages, title='Dashboard', random=random)
+    return render_template('dashboard.html', user=u, user_sounds=u.sounds, public=s, q=query, p=page, max_pages=max_pages, title='Dashboard', random=random)
 
 
 @app.route('/audio/')

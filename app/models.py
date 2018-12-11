@@ -3,6 +3,11 @@ from sqlalchemy_json import NestedMutableJson
 from sqlalchemy.dialects.mysql import LONGBLOB
 
 
+favorites = db.Table('favorites',
+    db.Column('user_id', db.BigInteger, db.ForeignKey('users.id')),
+    db.Column('sound_id', db.Integer, db.ForeignKey('sounds.id')),
+)
+
 class Server(db.Model):
     __tablename__ = 'servers'
 
@@ -14,14 +19,6 @@ class Server(db.Model):
 
     def __repr__(self):
         return '<Server {}>'.format(self.id)
-
-
-class Favorites(db.Model):
-    __tablename__ = 'favorites'
-
-    id = db.Column( db.Integer, primary_key=True )
-    sound_id = db.Column( db.Integer, db.ForeignKey('sounds.id') )
-    user_id = db.Column( db.BigInteger, db.ForeignKey('users.id') )
 
 
 class Sound(db.Model):
@@ -41,8 +38,6 @@ class Sound(db.Model):
 
     big = db.Column( db.Boolean, nullable=False, default=False )
 
-    favorites = db.relationship('Favorites', backref='sound', foreign_keys=[Favorites.sound_id])
-
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -53,9 +48,8 @@ class User(db.Model):
     join_sound_id = db.Column( db.Integer, db.ForeignKey('sounds.id', ondelete='SET NULL'), nullable=True )
     join_sound = db.relationship('Sound', foreign_keys=[join_sound_id] )
 
-    favorites = db.relationship('Favorites', backref='user', foreign_keys=[Favorites.user_id])
-
     sounds = db.relationship('Sound', backref='user', foreign_keys=[Sound.uploader_id])
+    favorites = db.relationship('Sound', secondary=favorites, backref='favorites')
 
     def __repr__(self):
         return '<User {}>'.format(self.id)
