@@ -13,6 +13,7 @@
 
             <h1 class="display-3 text-dark text-center" style="margin-top: 6rem;">Dashboard</h1>
 
+            {% if user.sounds.__len__() > 0 %}
             <h3 class="display-5 text-dark">Your sounds</h3>
             <hr>
 
@@ -23,6 +24,21 @@
                     {% endfor %}
                 </div>
             </div>
+            {% endif %}
+
+            {% if user.favorites.__len__() > 0 %}
+            <br>
+            <h3 class="display-5 text-dark">Favorited sounds</h3>
+            <hr>
+
+            <div class="container">
+                <div class="row">
+                    {% for sound in user.favorites %}
+                        {% include '_sound_item.html' %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
 
             <h3 class="display-5 text-dark" style="margin-top: 2rem;">Public sounds</h3>
             <hr>
