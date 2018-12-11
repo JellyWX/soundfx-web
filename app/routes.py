@@ -72,7 +72,6 @@ def fav():
         return ('added', 200)
 
 
-
 @app.route('/dashboard/')
 def dashboard():
     if not discord.authorized:

@@ -5,7 +5,7 @@ from sqlalchemy.dialects.mysql import LONGBLOB
 
 favorites = db.Table('favorites',
     db.Column('user_id', db.BigInteger, db.ForeignKey('users.id')),
-    db.Column('sound_id', db.Integer, db.ForeignKey('sounds.id')),
+    db.Column('sound_id', db.Integer, db.ForeignKey('sounds.id', ondelete='cascade')),
 )
 
 class Server(db.Model):
