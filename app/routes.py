@@ -51,6 +51,12 @@ def play():
     return ('OK', 200)
 
 
+@app.route('/fav/', methods=['POST'])
+def fav():
+    id = int_or_none(request.args.get('id'))
+    
+
+
 @app.route('/dashboard/')
 def dashboard():
     if not discord.authorized:

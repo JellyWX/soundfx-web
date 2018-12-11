@@ -16,6 +16,14 @@ class Server(db.Model):
         return '<Server {}>'.format(self.id)
 
 
+class Favorites(db.Model):
+    __tablename__ = 'favorites'
+
+    id = db.Column( db.Integer, primary_key=True )
+    sound_id = db.Column( db.Integer, db.ForeignKey('sounds.id') )
+    user_id = db.Column( db.BigInteger, db.ForeignKey('users.id') )
+
+
 class Sound(db.Model):
     __tablename__ = 'sounds'
 
@@ -24,7 +32,6 @@ class Sound(db.Model):
 
     url = db.Column( db.Text )
     src = db.Column( LONGBLOB )
-    last_used = db.Column( db.Integer )
     plays = db.Column( db.Integer )
 
     server_id = db.Column( db.BigInteger, db.ForeignKey('servers.id') )
@@ -33,6 +40,8 @@ class Sound(db.Model):
     public = db.Column( db.Boolean, nullable=False, default=True )
 
     big = db.Column( db.Boolean, nullable=False, default=False )
+
+    favorites = db.relationship('Favorites', backref='sound', foreign_keys=[Favorites.sound_id])
 
 
 class User(db.Model):
@@ -43,6 +52,8 @@ class User(db.Model):
 
     join_sound_id = db.Column( db.Integer, db.ForeignKey('sounds.id', ondelete='SET NULL'), nullable=True )
     join_sound = db.relationship('Sound', foreign_keys=[join_sound_id] )
+
+    favorites = db.relationship('Favorites', backref='user', foreign_keys=[Favorites.user_id])
 
     sounds = db.relationship('Sound', backref='user', foreign_keys=[Sound.uploader_id])
 

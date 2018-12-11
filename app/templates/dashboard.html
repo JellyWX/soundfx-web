@@ -66,9 +66,6 @@
 
 function req(url) {
     var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-
-    };
     xhttp.open("POST", url, true);
     xhttp.send();
 }
@@ -82,6 +79,14 @@ function play(id) {
     });
 
     sound.play();
+}
+
+function favorite(id) {
+    url = '{{ url_for('fav') }}' + '?id=' + id;
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("POST", url, true);
+    xhttp.send();
 }
 
 $(document).ready(function(){
