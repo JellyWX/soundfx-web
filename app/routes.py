@@ -43,9 +43,9 @@ def oauth():
 def play():
     id = request.args.get('id')
     user = session.get('user') or discord.get('api/users/@me').json().get('user')
-    s = Sound.query.get(id)
+    s = Sound.query.filter((Sound.public == True) | (Sound.uploader_id == user)).filter(Sound.id == id).first()
 
-    if s is not None and (s.public or s.uploader_id == user) and (not (id is None or user is None)):
+    if all(x is not None for x in (s, user, id)):
         requests.get('http://localhost:7765/play?id={}&user={}'.format(id, user))
 
     return ('OK', 200)
@@ -101,10 +101,10 @@ def dashboard():
 @app.route('/audio/')
 def audio():
     id = request.args.get('id')
-    s = Sound.query.get(id)
     user = session.get('user') or discord.get('api/users/@me').json().get('user')
+    s = Sound.query.filter((Sound.public == True) | (Sound.uploader_id == user)).filter(Sound.id == id).first()
 
-    if s is not None and (s.public or s.uploader_id == int(user)):
+    if s is not None:
         sub = subprocess.Popen(('ffmpeg', '-i', '-', '-loglevel', 'error', '-f', 'mp3', 'pipe:1'), stdout=subprocess.PIPE, stdin=subprocess.PIPE)
         stdout = sub.communicate(input=s.src)[0]
 
