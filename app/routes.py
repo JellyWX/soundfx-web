@@ -72,6 +72,21 @@ def fav():
         return ('added', 200)
 
 
+@app.route('/delete/')
+def delete():
+    id = int_or_none(request.args.get('id'))
+    user = session.get('user') or discord.get('api/users/@me').json().get('user')
+
+    u = User.query.filter(User.id == user).first()
+    s = Sound.query.get(id)
+
+    if s in u.sounds:
+        Sound.query.filter(Sound.id == id).delete(synchronize_session='fetch')
+        db.session.commit()
+
+    return redirect(url_for('dashboard'))
+
+
 @app.route('/dashboard/')
 def dashboard():
     if not discord.authorized:

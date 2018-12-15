@@ -44,6 +44,9 @@
                             <i style="font-size: 1.8rem; padding: 0.2rem;" class="far fa-star"></i>
                             {% endif %}
                         </a>
+                        {% if sound in user.sounds %}
+                        <a href="{{ url_for('delete', id=sound.id) }}"><i style="font-size: 1.8rem; padding: 0.2rem;" class="fas fa-trash-alt"></i>
+                        {% endif %}
                     </div>
                 </div>
             </div>
