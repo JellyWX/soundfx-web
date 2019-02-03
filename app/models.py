@@ -17,9 +17,6 @@ class Server(db.Model):
     roles = db.Column( NestedMutableJson )
     sounds = db.relationship('Sound', backref='server', lazy='dynamic')
 
-    def __repr__(self):
-        return '<Server {}>'.format(self.id)
-
 
 class Sound(db.Model):
     __tablename__ = 'sounds'
