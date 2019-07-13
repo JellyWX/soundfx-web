@@ -33,3 +33,5 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     RESULTS_PER_PAGE = 24
+    BOT_URL = 'http://localhost:7765'
+    PLAY_LIMIT = 2

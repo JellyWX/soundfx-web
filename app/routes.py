@@ -39,14 +39,14 @@ def oauth():
 
 
 @app.route('/play/', methods=['POST'])
-@limiter.limit('1 per 4 seconds')
+@limiter.limit('1 per {} seconds'.format(app.config['PLAY_LIMIT']))
 def play():
     id = request.args.get('id')
     user = session.get('user') or discord.get('api/users/@me').json().get('user')
     s = Sound.query.filter((Sound.public == True) | (Sound.uploader_id == user)).filter(Sound.id == id).first()
 
     if all(x is not None for x in (s, user, id)):
-        requests.get('http://localhost:7765/play?id={}&user={}'.format(id, user))
+        requests.get('{}/play?id={}&user={}'.format(app.config['BOT_URL'], id, user))
 
     return ('OK', 200)
 
