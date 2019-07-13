@@ -1,7 +1,7 @@
 from flask import redirect, render_template, request, url_for, session, abort, flash, send_file
 from sqlalchemy.sql.expression import func
 from app import app, discord, db, limiter
-from app.models import Sound, User
+from app.models import Sound, User, Collection
 import os
 import requests
 import json
@@ -127,3 +127,14 @@ def audio():
 
     else:
         return ('Forbidden', 403)
+
+
+@app.route('/collection/<int:id>')
+def view_collection(id: int):
+    user = session.get('user') or discord.get('api/users/@me').json().get('user')
+
+    u = User.query.filter(User.id == user).first()
+
+    collection = Collection.query.filter(Collection.id == id).first_or_404()
+
+    return render_template('collections.html', user=u, name=collection.name, sounds=collection.sounds)

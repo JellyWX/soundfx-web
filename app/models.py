@@ -8,6 +8,11 @@ favorites = db.Table('favorites',
     db.Column('sound_id', db.Integer, db.ForeignKey('sounds.id', ondelete='cascade')),
 )
 
+collections_associated = db.Table('collections_associated',
+    db.Column('collection_id', db.Integer, db.ForeignKey('collections.id', ondelete='cascade')),
+    db.Column('sound_id', db.Integer, db.ForeignKey('sounds.id', ondelete='cascade')),
+)
+
 class Server(db.Model):
     __tablename__ = 'servers'
 
@@ -33,7 +38,14 @@ class Sound(db.Model):
 
     public = db.Column( db.Boolean, nullable=False, default=True )
 
-    big = db.Column( db.Boolean, nullable=False, default=False )
+
+class Collection(db.Model):
+    __tablename__ = 'collections'
+
+    id = db.Column( db.Integer, primary_key=True )
+    name = db.Column( db.String(32) )
+
+    sounds = db.relationship('Sound', secondary=collections_associated)
 
 
 class User(db.Model):
@@ -43,10 +55,7 @@ class User(db.Model):
     id = db.Column( db.BigInteger, unique=True)
 
     join_sound_id = db.Column( db.Integer, db.ForeignKey('sounds.id', ondelete='SET NULL'), nullable=True )
-    join_sound = db.relationship('Sound', foreign_keys=[join_sound_id] )
+    join_sound = db.relationship('Sound', foreign_keys=[join_sound_id])
 
-    sounds = db.relationship('Sound', backref='user', foreign_keys=[Sound.uploader_id])
+    sounds = db.relationship('Sound', backref='owner', foreign_keys=[Sound.uploader_id])
     favorites = db.relationship('Sound', secondary=favorites, backref='favorites')
-
-    def __repr__(self):
-        return '<User {}>'.format(self.id)
