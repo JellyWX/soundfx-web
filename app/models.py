@@ -44,6 +44,10 @@ class Collection(db.Model):
 
     id = db.Column( db.Integer, primary_key=True )
     name = db.Column( db.String(32) )
+    creator = db.Column( db.String(32) )
+    creation_date = db.Column( db.String(32) )
+
+    description = db.Column( db.Text )
 
     sounds = db.relationship('Sound', secondary=collections_associated)
 

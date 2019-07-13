@@ -14,6 +14,7 @@
         <div class="col-sm-12 col-md-10 col-lg-6">
 
             <h1 class="display-3 text-dark text-center" style="margin-top: 6rem;">Dashboard</h1>
+            <a style="font-size: 1.4rem;" href="{{ url_for('all_collections') }}"><i class="fas fa-archive"></i> View Sound Collections</a>
 
             {% if user.sounds.__len__() > 0 %}
             <h3 class="display-5 text-dark">Your sounds</h3>

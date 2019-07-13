@@ -113,6 +113,13 @@ def dashboard():
     return render_template('dashboard.html', user=u, user_sounds=u.sounds, public=s, q=query, p=page, max_pages=max_pages, title='Dashboard', random=random)
 
 
+@app.route('/collections/')
+def all_collections():
+    collections = Collection.query.all()
+
+    return render_template('all_collections.html', collections=collections)
+
+
 @app.route('/audio/')
 def audio():
     id = request.args.get('id')
@@ -131,10 +138,13 @@ def audio():
 
 @app.route('/collection/<int:id>')
 def view_collection(id: int):
+    if not discord.authorized:
+        return redirect(url_for('oauth'))
+
     user = session.get('user') or discord.get('api/users/@me').json().get('user')
 
     u = User.query.filter(User.id == user).first()
 
     collection = Collection.query.filter(Collection.id == id).first_or_404()
 
-    return render_template('collections.html', user=u, name=collection.name, sounds=collection.sounds)
+    return render_template('collections.html', user=u, collection=collection, sounds=collection.sounds)

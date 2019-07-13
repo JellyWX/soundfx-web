@@ -15,16 +15,14 @@
 
             <h1 class="display-3 text-dark text-center" style="margin-top: 6rem;">Dashboard</h1>
 
-            <h3 class="display-5 text-dark" style="margin-top: 2rem;">{{ collection.name.title() }} collection</h3>
+            <h3 class="display-5 text-dark" style="margin-top: 2rem;">All Collections</h3>
             <hr>
-            <p class="display-7 text-dark"><a href="{{ url_for('all_collections') }}">Return</a></p>
-
-            <p>{{ collection.description }}</p>
+            <p class="display-7 text-dark"><a href="{{ url_for('dashboard') }}">Return</a></p>
 
             <div class="container">
                 <div class="row">
-                    {% for sound in sounds %}
-                        {% include '_sound_item.html' %}
+                    {% for collection in collections %}
+                        {% include '_collection_item.html' %}
                     {% endfor %}
                 </div>
             </div>
