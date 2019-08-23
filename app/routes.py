@@ -101,6 +101,11 @@ def dashboard():
 
     u = User.query.filter(User.id == user['id']).first()
 
+    if u is None:
+        u = User(id=user['id'])
+        db.session.add(u)
+        db.session.commit()
+
     if random:
         s = Sound.query.filter((Sound.public == True) & (Sound.src != None) & (Sound.name.ilike('%{}%'.format(query)))).order_by( func.rand() )
     else:
@@ -110,7 +115,7 @@ def dashboard():
 
     s = s.slice(page*app.config['RESULTS_PER_PAGE'], (page+1)*app.config['RESULTS_PER_PAGE'])
 
-    return render_template('dashboard.html', user=u, user_sounds=u.sounds, public=s, q=query, p=page, max_pages=max_pages, title='Dashboard', random=random)
+    return render_template('dashboard.html', user=u, public=s, q=query, p=page, max_pages=max_pages, title='Dashboard', random=random)
 
 
 @app.route('/collections/')
