@@ -29,7 +29,6 @@ class Sound(db.Model):
     id = db.Column( db.Integer, primary_key=True )
     name = db.Column( db.String(20) )
 
-    url = db.Column( db.Text )
     src = db.Column( LONGBLOB )
     plays = db.Column( db.Integer )
 
