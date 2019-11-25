@@ -7,7 +7,7 @@ import requests
 import json
 import io
 import subprocess
-
+import pika
 
 def int_or_none(o):
     try:
@@ -46,7 +46,13 @@ def play():
     s = Sound.query.filter((Sound.public == True) | (Sound.uploader_id == user)).filter(Sound.id == id).first()
 
     if all(x is not None for x in (s, user, id)):
-        requests.get('{}/play?id={}&user={}'.format(app.config['BOT_URL'], id, user))
+        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+        channel = connection.channel()
+        channel.queue_declare(queue='soundfx')
+
+        channel.basic_publish(exchange='', routing_key='soundfx', body='{},{}'.format(id, user))
+
+        connection.close()
 
     return ('OK', 200)
 
