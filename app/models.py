@@ -16,8 +16,7 @@ collections_associated = db.Table('collections_associated',
 class Server(db.Model):
     __tablename__ = 'servers'
 
-    map_id = db.Column( db.Integer, primary_key=True)
-    id = db.Column( db.BigInteger, unique=True)
+    id = db.Column( db.BigInteger, primary_key=True, autoincrement=False )
     prefix = db.Column( db.String(5) )
     roles = db.Column( NestedMutableJson )
     sounds = db.relationship('Sound', backref='server', lazy='dynamic')
@@ -54,8 +53,7 @@ class Collection(db.Model):
 class User(db.Model):
     __tablename__ = 'users'
 
-    map_id = db.Column( db.Integer, primary_key=True)
-    id = db.Column( db.BigInteger, unique=True)
+    id = db.Column( db.BigInteger, primary_key=True, autoincrement=False )
 
     join_sound_id = db.Column( db.Integer, db.ForeignKey('sounds.id', ondelete='SET NULL'), nullable=True )
     join_sound = db.relationship('Sound', foreign_keys=[join_sound_id])
