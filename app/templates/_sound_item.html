@@ -4,7 +4,6 @@
 
         <a href="javascript:open({{ sound.id }})" data-toggle="modal" data-target="#m{{ sound.id }}"><i class="fas fa-info-circle" style="font-size: 1.5rem; padding: 0.2rem;"></i></a>
         <a href="javascript:play({{ sound.id }})"><i class="fas fa-play" style="font-size: 1.5rem; padding: 0.2rem;"></i></a>
-        <a href="javascript:req('{{ url_for('play', id=sound.id) }}')"><i class="fab fa-discord" style="font-size: 1.5rem; padding: 0.2rem;"></i></a>
     </div>
 
     <!-- Modal -->
@@ -35,8 +34,7 @@
 
                     <div class="d-flex flex-row justify-content-around">
                         <a href="javascript:play({{ sound.id }})"><i class="fas fa-play" style="font-size: 1.8rem; padding: 0.2rem;"></i></a>
-                        <a href="javascript:req('{{ url_for('play', id=sound.id) }}')"><i class="fab fa-discord" style="font-size: 1.8rem; padding: 0.2rem;"></i></a>
-                        <a href="{{ url_for('audio', id=sound.id) }}" filename="{{ sound.name }}.mp3" download="{{ sound.name }}.mp3"><i style="font-size: 1.8rem; padding: 0.2rem;" class="fas fa-file-download"></i></a>
+                        <a href="{{ url_for('audio', id=sound.id) }}" download="{{ sound.name }}.mp3"><i style="font-size: 1.8rem; padding: 0.2rem;" class="fas fa-file-download"></i></a>
                         <a href="javascript:favorite({{ sound.id }})" id="f{{ sound.id }}">
                             {% if user in sound.favorites %}
                             <i style="font-size: 1.8rem; padding: 0.2rem;" class="fas fa-star"></i>
