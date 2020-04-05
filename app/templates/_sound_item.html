@@ -1,6 +1,6 @@
 <div class="col-md-6 col-sm-12" style="margin-top: 0.1rem; display: inline-block; padding: 0.4rem;">
     <div class="d-flex flex-row align-items-center border border-primary rounded" style="padding: 1rem; font-size: 1.2rem;">
-        <a href="javascript:req('{{ url_for('play', id=sound.id) }}')" class="flex-grow-1">{{ sound.name }}</a>
+        <a class="flex-grow-1">{{ sound.name }}</a>
 
         <a href="javascript:open({{ sound.id }})" data-toggle="modal" data-target="#m{{ sound.id }}"><i class="fas fa-info-circle" style="font-size: 1.5rem; padding: 0.2rem;"></i></a>
         <a href="javascript:play({{ sound.id }})"><i class="fas fa-play" style="font-size: 1.5rem; padding: 0.2rem;"></i></a>
