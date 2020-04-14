@@ -1,7 +1,7 @@
-from flask import redirect, render_template, request, url_for, session, abort, flash, send_file
+from flask import redirect, render_template, request, url_for, session, send_file
 from sqlalchemy.sql.expression import func
-from app import app, discord, db, limiter
-from app.models import Sound, User, Collection
+from app import app, discord, db
+from app.models import Sound, Favorites
 import io
 import subprocess
 
@@ -16,7 +16,8 @@ def int_or_none(o):
 @app.errorhandler(500)
 def internal_error(error):
     session.clear()
-    return "An error has occured! We've made a report, and cleared your cache on this website. If you encounter this error again, please send us a message on Discord!"
+    return "An error has occured! We've made a report, and cleared your cache on this website. " \
+           "If you encounter this error again, please send us a message on Discord!"
 
 
 @app.route('/')
@@ -41,17 +42,17 @@ def fav():
     id = int_or_none(request.args.get('id'))
     user = session.get('user') or discord.get('api/users/@me').json().get('user')
 
-    u = User.query.filter(User.id == user).first()
-    s = Sound.query.get(id)
+    f = Favorites.query.filter(Favorites.user_id == user).filter(Favorites.sound_id == id)
 
-    if s in u.favorites:
-        u.favorites.remove(s)
+    if f.first() is None:
+        f.delete(synchronize_session='fetch')
         db.session.commit()
 
         return ('removed', 200)
 
     else:
-        u.favorites.append(s)
+        f = Favorites(user_id=user, sound_id=id)
+        db.session.add(f)
         db.session.commit()
 
         return ('added', 200)
@@ -62,12 +63,8 @@ def delete():
     id = int_or_none(request.args.get('id'))
     user = session.get('user') or discord.get('api/users/@me').json().get('user')
 
-    u = User.query.filter(User.id == user).first()
-    s = Sound.query.get(id)
-
-    if s in u.sounds:
-        Sound.query.filter(Sound.id == id).delete(synchronize_session='fetch')
-        db.session.commit()
+    s = Sound.query.filter(Sound.uploader_id == user).filter(Sound.id == id).delete(synchronize_session='fetch')
+    db.session.commit()
 
     return redirect(url_for('dashboard'))
 
@@ -84,13 +81,6 @@ def dashboard():
     page = int_or_none(request.args.get('page')) or 0
     random = int_or_none(request.args.get('random')) or 0
 
-    u = User.query.filter(User.id == user['id']).first()
-
-    if u is None:
-        u = User(id=user['id'])
-        db.session.add(u)
-        db.session.commit()
-
     if random:
         s = Sound.query.filter(
             (Sound.public == True) & (Sound.src != None) & (Sound.name.ilike('%{}%'.format(query)))).order_by(
@@ -104,15 +94,12 @@ def dashboard():
 
     s = s.slice(page * app.config['RESULTS_PER_PAGE'], (page + 1) * app.config['RESULTS_PER_PAGE'])
 
-    return render_template('dashboard.html', user=u, public=s, q=query, p=page, max_pages=max_pages, title='Dashboard',
-                           random=random)
+    f = [x.sound_id for x in db.session.query(Favorites).filter(Favorites.c.user_id == user['id']).all()]
+    f_s = Sound.query.filter(Sound.id.in_(f))
+    user_sounds = Sound.query.filter(Sound.uploader_id == user['id'])
 
-
-@app.route('/collections/')
-def all_collections():
-    collections = Collection.query.all()
-
-    return render_template('all_collections.html', collections=collections)
+    return render_template('dashboard.html', favorites=f_s, public=s, q=query, p=page, max_pages=max_pages,
+                           sounds=user_sounds, title='Dashboard', random=random)
 
 
 @app.route('/audio/')
@@ -130,17 +117,3 @@ def audio():
 
     else:
         return ('Forbidden', 403)
-
-
-@app.route('/collection/<int:id>')
-def view_collection(id: int):
-    if not discord.authorized:
-        return redirect(url_for('oauth'))
-
-    user = session.get('user') or discord.get('api/users/@me').json().get('user')
-
-    u = User.query.filter(User.id == user).first()
-
-    collection = Collection.query.filter(Collection.id == id).first_or_404()
-
-    return render_template('collections.html', user=u, collection=collection, sounds=collection.sounds)

@@ -28,8 +28,6 @@
                     <br>
                     Plays: <strong>{{ sound.plays }}</strong>
                     <br>
-                    Favorites: <strong>{{ sound.favorites.__len__() }}</strong>
-                    <br>
                     <br>
 
                     <div class="d-flex flex-row justify-content-around">
@@ -42,7 +40,7 @@
                             <i style="font-size: 1.8rem; padding: 0.2rem;" class="far fa-star"></i>
                             {% endif %}
                         </a>
-                        {% if sound in user.sounds %}
+                        {% if sound in sounds %}
                         <a href="{{ url_for('delete', id=sound.id) }}"><i style="font-size: 1.8rem; padding: 0.2rem;" class="fas fa-trash-alt"></i></a>
                         {% endif %}
                     </div>
