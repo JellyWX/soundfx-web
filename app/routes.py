@@ -42,7 +42,7 @@ def fav():
     id = int_or_none(request.args.get('id'))
     user = session.get('user') or discord.get('api/users/@me').json().get('user')
 
-    f = Favorites.query.filter(Favorites.user_id == user).filter(Favorites.sound_id == id)
+    f = db.session.query(Favorites).filter(Favorites.c.user_id == user).filter(Favorites.c.sound_id == id)
 
     if f.first() is None:
         f.delete(synchronize_session='fetch')
@@ -83,11 +83,11 @@ def dashboard():
 
     if random:
         s = Sound.query.filter(
-            (Sound.public == True) & (Sound.src != None) & (Sound.name.ilike('%{}%'.format(query)))).order_by(
+            (Sound.public == True) & (Sound.name.ilike('%{}%'.format(query)))).order_by(
             func.rand())
     else:
         s = Sound.query.filter(
-            (Sound.public == True) & (Sound.src != None) & (Sound.name.ilike('%{}%'.format(query)))).order_by(
+            (Sound.public == True) & (Sound.name.ilike('%{}%'.format(query)))).order_by(
             Sound.name)
 
     max_pages = s.count() // app.config['RESULTS_PER_PAGE']

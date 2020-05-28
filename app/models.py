@@ -1,6 +1,6 @@
 from app import db
 from sqlalchemy_json import NestedMutableJson
-from sqlalchemy.dialects.mysql import LONGBLOB
+from sqlalchemy.dialects.mysql import MEDIUMBLOB
 
 Favorites = db.Table('favorites',
                      db.Column('user_id', db.BigInteger),
@@ -21,9 +21,9 @@ class Sound(db.Model):
     __tablename__ = 'sounds'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20))
+    name = db.Column(db.String(20), nullable=False)
 
-    src = db.Column(LONGBLOB)
+    src = db.Column(MEDIUMBLOB, nullable=False)
     plays = db.Column(db.Integer)
 
     server_id = db.Column(db.BigInteger, db.ForeignKey('servers.id'))
