@@ -7,7 +7,7 @@ def int_or_none(o):
     try:
         return int(o)
 
-    except ValueError:
+    except:
         return None
 
 
@@ -122,8 +122,11 @@ def user_sounds():
 @app.route('/api/sound/', methods=['GET'])
 @limiter.limit('1 per 5 seconds')
 def get_sound():
-    if (sound_id := request.json.get('sound_id')) is not None:
-        user_id = session.get('user') or discord.get('api/users/@me').json().get('user')
+    if (sound_id := request.args.get('sound_id')) is not None:
+        try:
+            user_id = session.get('user') or discord.get('api/users/@me').json().get('user')
+        except:
+            user_id = None
 
         sound = Sound.query.get(sound_id)
 
