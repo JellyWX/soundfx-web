@@ -67,18 +67,6 @@ a.disabled {
             <br>
 
             <script>
- /*
-function play(id) {
-    let audio_src = '' + '?id=' + id;
-
-    let sound = new Howl({
-        src: [audio_src],
-        format: 'mp3'
-    });
-
-    sound.play();
-}
- */
 
 function htmlEncode(value) {
     // https://www.w3docs.com/snippets/javascript/how-to-html-encode-a-string.html
@@ -104,7 +92,7 @@ function populate_public_sounds() {
                 let id = sound.id;
                 let plays = sound.plays;
                 let owned = false;
-                let favorite = false;
+                let favorite = window.user_favorites.includes(id);
 
                 $('#public-sounds').append(`{% include "_sound_item.html" %}`);
             }
@@ -128,8 +116,31 @@ function populate_public_sounds() {
 
 window.max_pages = 1;
 window.current_page = 0;
+window.user_favorites = [];
 
 $(function () {
+    $('#favorite-sounds').children().remove();
+
+    $.ajax({
+        url: '{{ url_for('favorites') }}',
+        contentType: 'application/json; charset=utf-8;',
+        method: 'GET',
+
+        success: function (data) {
+            for (let sound of data.sounds) {
+                let name = htmlEncode(sound.name);
+                let id = sound.id;
+                let plays = sound.plays;
+                let owned = false;
+                let favorite = true;
+
+                $('#favorite-sounds').append(`{% include "_sound_item.html" %}`);
+
+                window.user_favorites.push(id);
+            }
+        }
+    })
+
     $('#user-sounds').children().remove();
 
     $.ajax({
@@ -143,7 +154,7 @@ $(function () {
                 let id = sound.id;
                 let plays = sound.plays;
                 let owned = true;
-                let favorite = false;
+                let favorite = window.user_favorites.includes(id);
 
                 $('#user-sounds').append(`{% include "_sound_item.html" %}`);
             }
@@ -279,8 +290,58 @@ $(document).on('click', '.delete-sound', function (event) {
                 sounds.remove();
             });
         }
+    });
+ });
+
+$(document).on('click', '.favorite-sound', function (event) {
+    event.preventDefault();
+
+    let fav_button = $(this);
+    let sound_item = $(this).closest('.sound-item');
+
+    let is_favorite = $(this).data('favorited');
+
+    let icon = $(this).find('i');
+
+    let method = is_favorite ? 'DELETE' : 'POST';
+    let sound_id = sound_item.data('sound');
+
+    $.ajax({
+        url: '{{ url_for('favorites') }}',
+        contentType: 'application/json; charset=utf-8',
+        method: method,
+        data: JSON.stringify({'sound_id': sound_id}),
+
+        success: function () {
+            if (is_favorite) {
+                // removed from favorites
+                icon.addClass('far');
+                icon.removeClass('fas');
+
+                let sounds = $('#favorite-sounds').find(`.sound-item[data-sound=${sound_id}]`);
+
+                $('.modal').modal('hide').on('hidden.bs.modal', function () {
+                    sounds.remove();
+                });
+            }
+            else {
+                // added to favorites
+                icon.addClass('fas');
+                icon.removeClass('far');
+
+                let name = sound_item.data('name');
+                let id = sound_id;
+                let plays = sound_item.data('plays');
+                let owned = false;
+                let favorite = true;
+
+                $('#favorite-sounds').append(`{% include "_sound_item.html" %}`);
+            }
+
+            fav_button.data('favorited', !is_favorite);
+        }
     })
- })
+});
 
             </script>
         </div>

@@ -60,16 +60,17 @@ def favorites():
 
     else:
         if request.method == 'GET':
-            user_favorites = db.session.query(Favorites).join(Sound).filter(Favorites.c.user_id == user_id)
+            user_favorites = db.session.query(Favorites).join(Sound).filter(Favorites.user_id == user_id)
 
-            return jsonify({'sounds': [sound.to_dict() for sound in user_favorites]})
+            return jsonify({'sounds': [Sound.query.get(fav.sound_id).to_dict() for fav in user_favorites]})
 
         elif (sound_id := request.json.get('sound_id')) is not None:
             if request.method == 'DELETE':
-                db.session.query(Favorites) \
-                    .filter(Favorites.c.user_id == user_id) \
-                    .filter(Favorites.c.sound_id == sound_id) \
+                q = db.session.query(Favorites) \
+                    .filter_by(user_id=int(user_id), sound_id=sound_id) \
                     .delete(synchronize_session='fetch')
+
+                print(q)
 
                 db.session.commit()
 
@@ -77,12 +78,13 @@ def favorites():
 
             else:  # method is POST
                 f = db.session.query(Favorites) \
-                    .filter(Favorites.c.user_id == user_id) \
-                    .filter(Favorites.c.sound_id == sound_id)
+                    .filter(Favorites.user_id == user_id) \
+                    .filter(Favorites.sound_id == sound_id)
 
-                if f.first() is not None:
+                if f.first() is None:
                     f = Favorites(user_id=user_id, sound_id=sound_id)
                     db.session.add(f)
+
                     db.session.commit()
 
                 return '', 201

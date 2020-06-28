@@ -2,10 +2,12 @@ import base64
 from app import db
 from sqlalchemy.dialects.mysql import MEDIUMBLOB, INTEGER as INT
 
-Favorites = db.Table('favorites',
-                     db.Column('user_id', db.BigInteger),
-                     db.Column('sound_id', INT(unsigned=True), db.ForeignKey('sounds.id', ondelete='cascade')),
-                     )
+
+class Favorites(db.Model):
+    __tablename__ = 'favorites'
+
+    user_id = db.Column('user_id', db.BigInteger, primary_key=True)
+    sound_id = db.Column('sound_id', INT(unsigned=True), db.ForeignKey('sounds.id', ondelete='cascade'), primary_key=True)
 
 
 class Server(db.Model):
