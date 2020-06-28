@@ -56,11 +56,11 @@ a.disabled {
 
             <hr>
             <div class="d-flex flex-row justify-content-between">
-                <a href="#" class="paging disabled" id="prev-page"><i class="fas fa-arrow-circle-left" style="font-size: 3.6rem;"></i></a>
+                <a href="#public-sounds" class="paging disabled" id="prev-page"><i class="fas fa-arrow-circle-left" style="font-size: 3.6rem;"></i></a>
 
-                <a href="#"><i class="fas fa-random" style="font-size: 3.6rem;"></i></a>
+                <a href="#public-sounds" id="random-page"><i class="fas fa-random" style="font-size: 3.6rem;"></i></a>
 
-                <a href="#" class="paging" id="next-page"><i class="fas fa-arrow-circle-right" style="font-size: 3.6rem;"></i></a>
+                <a href="#public-sounds" class="paging" id="next-page"><i class="fas fa-arrow-circle-right" style="font-size: 3.6rem;"></i></a>
             </div>
 
             <br>
@@ -86,6 +86,44 @@ function htmlEncode(value) {
     //create a div in-memory, set it's inner text. Which jQuery automatically encodes.
     //then take the encoded contents back out.  The div never exists on the page.
     return $('<div/>').text(value).html();
+}
+
+function populate_public_sounds() {
+    $('#public-sounds').children().remove();
+
+    $.ajax({
+        url: '{{ url_for('search_sounds') }}' + '?page=' + current_page,
+        contentType: 'application/json; charset=utf-8;',
+        method: 'GET',
+
+        success: function (data) {
+            window.max_pages = data.last_page;
+
+            for (let sound of data.sounds) {
+                let name = htmlEncode(sound.name);
+                let id = sound.id;
+                let plays = sound.plays;
+                let owned = false;
+                let favorite = false;
+
+                $('#public-sounds').append(`{% include "_sound_item.html" %}`);
+            }
+
+            if (window.current_page <= 0) {
+                $('#prev-page').addClass('disabled');
+            }
+            else {
+                $('#prev-page').removeClass('disabled');
+            }
+
+            if (window.current_page >= window.max_pages) {
+                $('#next-page').addClass('disabled');
+            }
+            else {
+                $('#next-page').removeClass('disabled');
+            }
+        }
+    });
 }
 
 window.max_pages = 1;
@@ -116,61 +154,133 @@ $(function () {
         }
     });
 
-    $('#public-sounds').children().remove();
-
-    $.ajax({
-        url: '{{ url_for('search_sounds') }}',
-        contentType: 'application/json; charset=utf-8;',
-        method: 'GET',
-
-        success: function (data) {
-            window.max_pages = data.last_page;
-
-            for (let sound of data.sounds) {
-                let name = htmlEncode(sound.name);
-                let id = sound.id;
-                let plays = sound.plays;
-                let owned = false;
-                let favorite = false;
-
-                $('#public-sounds').append(`{% include "_sound_item.html" %}`);
-            }
-        }
-    });
+    populate_public_sounds();
 });
 
 $('#next-page').on('click', function () {
     if (window.current_page < window.max_pages) {
         ++window.current_page;
 
-        $('#public-sounds').children().remove();
-
-        $.ajax({
-            url: '{{ url_for('search_sounds') }}' + '?page=' + current_page,
-            contentType: 'application/json; charset=utf-8;',
-            method: 'GET',
-
-            success: function (data) {
-                window.max_pages = data.last_page;
-
-                for (let sound of data.sounds) {
-                    let name = htmlEncode(sound.name);
-                    let id = sound.id;
-                    let plays = sound.plays;
-                    let owned = false;
-                    let favorite = false;
-
-                    $('#public-sounds').append(`{% include "_sound_item.html" %}`);
-                }
-
-                $('#prev-page').remove('disabled');
-            }
-        });
+        populate_public_sounds();
     }
     else {
         $(this).addClass('disabled');
     }
 });
+
+$('#prev-page').on('click', function () {
+    if (window.current_page > 0) {
+        --window.current_page;
+
+        populate_public_sounds();
+    }
+    else {
+        $(this).addClass('disabled');
+    }
+});
+
+$('#random-page').on('click', function () {
+    window.current_page = Math.floor(Math.random() * (window.max_pages + 1));
+
+    populate_public_sounds();
+});
+
+$(document).on('click', '.play-sound', function (event) {
+    event.preventDefault();
+
+    let sound_card = $(this).closest('.sound-item');
+
+    if (sound_card.data('sound-src') === undefined) {
+        $.ajax({
+            url: '{{ url_for('get_sound') }}' + '?sound_id=' + sound_card.data('sound'),
+            contentType: 'application/json; charset=utf-8',
+            method: 'GET',
+
+            success: function (data) {
+                sound_card.data('sound-src', data.source);
+
+                let sound = new Howl({
+                    src: [`data:application/octet-stream;base64,${data.source}`],
+                    format: 'opus'
+                });
+
+                sound.play();
+            }
+        })
+    }
+    else {
+        let sound = new Howl({
+            src: [`data:application/octet-stream;base64,${sound_card.data('sound-src')}`],
+            format: 'opus'
+        });
+
+        sound.play();
+    }
+});
+
+$(document).on('click', '.download-sound.uninitialized', function (event) {
+    event.preventDefault();
+
+    let sound_card = $(this).closest('.sound-item');
+
+    let download_anchor = $(this);
+
+    if (sound_card.data('sound-src') === undefined) {
+        $.ajax({
+            url: '{{ url_for('get_sound') }}' + '?sound_id=' + sound_card.data('sound'),
+            contentType: 'application/json; charset=utf-8',
+            method: 'GET',
+
+            success: function (data) {
+                console.log(data);
+
+                sound_card.data('sound-src', data.source);
+
+                let blob = new Blob(
+                    [ atob(sound_card.data('sound-src')) ],
+                    {
+                        type: 'audio/opus'
+                    }
+                )
+
+                download_anchor.attr('href', URL.createObjectURL(blob));
+                download_anchor.removeClass('uninitialized');
+                download_anchor.click();
+            }
+        })
+    }
+    else {
+        let blob = new Blob(
+            [ atob(sound_card.data('sound-src')) ],
+            {
+                type: 'audio/opus'
+            }
+        )
+
+        download_anchor.attr('href', URL.createObjectURL(blob));
+        download_anchor.removeClass('uninitialized');
+        download_anchor.click();
+    }
+});
+
+$(document).on('click', '.delete-sound', function (event) {
+    event.preventDefault();
+
+    let sound_id = $(this).closest('.sound-item').data('sound');
+
+    $.ajax({
+        url: '{{ url_for('user_sounds') }}' + '?sound_id=' + sound_id,
+        method: 'DELETE',
+
+        success: function () {
+            let sounds = $(`.sound-item[data-sound=${sound_id}]`);
+
+            $('.modal').modal('hide').on('hidden.bs.modal', function () {
+                sounds.remove();
+            });
+        }
+    })
+ })
 
             </script>
         </div>

@@ -101,7 +101,7 @@ def user_sounds():
 
     else:
         if request.method == 'DELETE':
-            if (sound_id := request.json.get('sound_id')) is not None:
+            if (sound_id := request.args.get('sound_id')) is not None:
                 Sound.query \
                     .filter(Sound.uploader_id == user_id) \
                     .filter(Sound.id == sound_id) \
