@@ -43,5 +43,5 @@ class Sound(db.Model):
             'name': self.name,
             'plays': self.plays,
 
-            'source': base64.b64encode(self.src),
+            'source': base64.b64encode(self.src).decode('utf-8'),
         }

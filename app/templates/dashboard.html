@@ -56,7 +56,7 @@ a.disabled {
 
             <hr>
             <div class="d-flex flex-row justify-content-between">
-                <a href="#" class="paging" id="previous-page"><i class="fas fa-arrow-circle-left" style="font-size: 3.6rem;"></i></a>
+                <a href="#" class="paging disabled" id="prev-page"><i class="fas fa-arrow-circle-left" style="font-size: 3.6rem;"></i></a>
 
                 <a href="#"><i class="fas fa-random" style="font-size: 3.6rem;"></i></a>
 
@@ -79,6 +79,98 @@ function play(id) {
     sound.play();
 }
  */
+
+function htmlEncode(value) {
+    // https://www.w3docs.com/snippets/javascript/how-to-html-encode-a-string.html
+
+    //create a div in-memory, set it's inner text. Which jQuery automatically encodes.
+    //then take the encoded contents back out.  The div never exists on the page.
+    return $('<div/>').text(value).html();
+}
+
+window.max_pages = 1;
+window.current_page = 0;
+
+$(function () {
+    $('#user-sounds').children().remove();
+
+    $.ajax({
+        url: '{{ url_for('user_sounds') }}',
+        contentType: 'application/json; charset=utf-8;',
+        method: 'GET',
+
+        success: function (data) {
+            for (let sound of data.sounds) {
+                let name = htmlEncode(sound.name);
+                let id = sound.id;
+                let plays = sound.plays;
+                let owned = true;
+                let favorite = false;
+
+                $('#user-sounds').append(`{% include "_sound_item.html" %}`);
+            }
+        },
+
+        error: function () {
+            $('#user-sounds').remove();
+        }
+    });
+
+    $('#public-sounds').children().remove();
+
+    $.ajax({
+        url: '{{ url_for('search_sounds') }}',
+        contentType: 'application/json; charset=utf-8;',
+        method: 'GET',
+
+        success: function (data) {
+            window.max_pages = data.last_page;
+
+            for (let sound of data.sounds) {
+                let name = htmlEncode(sound.name);
+                let id = sound.id;
+                let plays = sound.plays;
+                let owned = false;
+                let favorite = false;
+
+                $('#public-sounds').append(`{% include "_sound_item.html" %}`);
+            }
+        }
+    });
+});
+
+$('#next-page').on('click', function () {
+    if (window.current_page < window.max_pages) {
+        ++window.current_page;
+
+        $('#public-sounds').children().remove();
+
+        $.ajax({
+            url: '{{ url_for('search_sounds') }}' + '?page=' + current_page,
+            contentType: 'application/json; charset=utf-8;',
+            method: 'GET',
+
+            success: function (data) {
+                window.max_pages = data.last_page;
+
+                for (let sound of data.sounds) {
+                    let name = htmlEncode(sound.name);
+                    let id = sound.id;
+                    let plays = sound.plays;
+                    let owned = false;
+                    let favorite = false;
+
+                    $('#public-sounds').append(`{% include "_sound_item.html" %}`);
+                }
+
+                $('#prev-page').remove('disabled');
+            }
+        });
+    }
+    else {
+        $(this).addClass('disabled');
+    }
+});
 
             </script>
         </div>

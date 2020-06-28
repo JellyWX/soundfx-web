@@ -42,12 +42,13 @@ def search_sounds():
     page = int_or_none(request.args.get('page')) or 0
 
     sounds = Sound.query.filter((Sound.public == True) & (Sound.name.ilike('%{}%'.format(query)))) \
-        .order_by(Sound.name) \
-        .slice(page * app.config['RESULTS_PER_PAGE'], (page + 1) * app.config['RESULTS_PER_PAGE'])
+        .order_by(Sound.name)
 
     max_pages = sounds.count() // app.config['RESULTS_PER_PAGE']
 
-    return jsonify({'sounds': [sound.to_dict() for sound in sounds], 'first_page': 0, 'last_page': max_pages})
+    sounds_slice = sounds.slice(page * app.config['RESULTS_PER_PAGE'], (page + 1) * app.config['RESULTS_PER_PAGE'])
+
+    return jsonify({'sounds': [sound.to_dict() for sound in sounds_slice], 'first_page': 0, 'last_page': max_pages})
 
 
 @app.route('/api/favorites/', methods=['POST', 'DELETE', 'GET'])
