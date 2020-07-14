@@ -41,7 +41,7 @@ def search_sounds():
     query = request.args.get('query') or ''
     page = int_or_none(request.args.get('page')) or 0
 
-    sounds = Sound.query.filter((Sound.public == True) & (Sound.name.ilike('%{}%'.format(query)))) \
+    sounds = Sound.query.filter((Sound.public == True) & (Sound.name.like('%{}%'.format(query)))) \
         .order_by(Sound.name)
 
     max_pages = sounds.count() // app.config['RESULTS_PER_PAGE']
