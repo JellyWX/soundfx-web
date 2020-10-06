@@ -210,6 +210,8 @@ $(document).on('click', '.play-sound', function (event) {
             success: function (data) {
                 sound_card.data('sound-src', data.source);
 
+                Howler.stop();
+
                 let sound = new Howl({
                     src: [`data:application/octet-stream;base64,${data.source}`],
                     format: 'opus'
@@ -220,6 +222,8 @@ $(document).on('click', '.play-sound', function (event) {
         })
     }
     else {
+        Howler.stop();
+
         let sound = new Howl({
             src: [`data:application/octet-stream;base64,${sound_card.data('sound-src')}`],
             format: 'opus'
