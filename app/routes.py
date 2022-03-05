@@ -1,5 +1,5 @@
 from flask import redirect, render_template, request, url_for, session, jsonify, abort
-from app import app, discord, db, limiter
+from app import app, discord, db
 from app.models import Sound, Favorites
 
 
@@ -28,6 +28,16 @@ def help_page():
     return render_template('help.html', title='Help')
 
 
+@app.route('/terms/')
+def terms_page():
+    return render_template('terms.html', title='Terms of Service')
+
+
+@app.route('/privacy/')
+def privacy_page():
+    return render_template('privacy.html', title='Privacy Policy')
+
+
 @app.route('/oauth/')
 def oauth():
     session.clear()
@@ -36,7 +46,6 @@ def oauth():
 
 
 @app.route('/api/search/', methods=['GET'])
-@limiter.limit('1 per 2 seconds')
 def search_sounds():
     query = request.args.get('query') or ''
     page = int_or_none(request.args.get('page')) or 0
@@ -70,8 +79,6 @@ def favorites():
                     .filter_by(user_id=int(user_id), sound_id=sound_id) \
                     .delete(synchronize_session='fetch')
 
-                print(q)
-
                 db.session.commit()
 
                 return '', 201
@@ -94,7 +101,6 @@ def favorites():
 
 
 @app.route('/api/user_sounds/', methods=['GET', 'DELETE'])
-@limiter.limit('1 per 2 seconds')
 def user_sounds():
     user_id = session.get('user') or discord.get('api/users/@me').json().get('user')
 
@@ -123,7 +129,6 @@ def user_sounds():
 
 
 @app.route('/api/sound/', methods=['GET'])
-@limiter.limit('1 per 5 seconds')
 def get_sound():
     if (sound_id := request.args.get('sound_id')) is not None:
         try:

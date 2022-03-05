@@ -1,0 +1,5 @@
+flask~=2.0
+flask-dance~=5.1
+flask-sqlalchemy~=2.5
+pymysql~=1.0
+cryptography~=36.0
